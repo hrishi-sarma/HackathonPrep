@@ -1,0 +1,57 @@
+*
+{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
+    
+}
+
+section {
+
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(pics/eagan-hsu-sdewdKGHl5A-unsplash.jpg);
+}
+
+section .main{
+
+    position:relative;
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+section .main .searchBox{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-width: 10px;
+    
+
+}
+
+section .main .searchBox .query{
+    width:100%;
+    height: 100%;
+    padding: 10px;
+    margin-top: 50px;
+
+    
+}
+
+section .main .searchBox .goSearch .go{
+    width: 100%;
+
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    padding-top: 10px;
+}
