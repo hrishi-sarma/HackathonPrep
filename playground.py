@@ -1,64 +1,81 @@
+# from PyQt5.QtWidgets import *
+# from PyQt5.QtCore import *
+# from PyQt5.QtGui import *
+# import sys
+
+# class Window(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#         self.setWindowTitle("QHBoxLayout Example")
+#         # Create a QHBoxLayout instance
+#         layout = QHBoxLayout()
+        
+#         # Create buttons
+#         left_button = QPushButton("Left-Most")
+#         center_button = QPushButton("Center")
+#         right_button = QPushButton("Right-Most")
+        
+#         # Set size policies to give proportional sizes
+#         left_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+#         center_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+#         right_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        
+#         # Add widgets to the layout with stretch factors
+#         layout.addWidget(left_button, 1)
+#         layout.addWidget(center_button, 1)
+#         layout.addWidget(right_button, 1)
+        
+#         # Set the layout on the application's window
+#         self.setLayout(layout)
+#         self.showMaximized()
+
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = Window()
+#     window.show()
+#     sys.exit(app.exec_())
+
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 import sys
+import browser as br
 
-from PyQt5.QtCore import pyqtProperty, QCoreApplication, QObject, QUrl
-from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine
+class Window(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("QHBoxLayout Example")
+        # Create a QHBoxLayout instance
+        layout = QHBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)  # Center the layout within the window
+        
+        # Create buttons
+        left_button = QPushButton("Google Search Engine")
+        center_button = QPushButton("Center")
+        right_button = QPushButton("Right-Most")
+        
+        # Set the fixed size for square buttons
+        button_size = 150  # Size of the square buttons (you can adjust this value)
+        left_button.setFixedSize(button_size, button_size)
+        center_button.setFixedSize(button_size, button_size)
+        right_button.setFixedSize(button_size, button_size)
+        
+        # Set size policies to ensure the buttons are square
+        left_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        center_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        right_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        
+        # Add widgets to the layout with stretch factors
+        layout.addWidget(left_button
+        layout.addWidget(center_button)
+        layout.addWidget(right_button)
+        
+        # Set the layout on the application's window
+        self.setLayout(layout)
+        self.showMaximized()
 
-
-# This is the type that will be registered with QML.  It must be a
-# sub-class of QObject.
-class Person(QObject):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        # Initialise the value of the properties.
-        self._name = ''
-        self._shoeSize = 0
-
-    # Define the getter of the 'name' property.  The C++ type of the
-    # property is QString which Python will convert to and from a string.
-    @pyqtProperty('QString')
-    def name(self):
-        return self._name
-
-    # Define the setter of the 'name' property.
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    # Define the getter of the 'shoeSize' property.  The C++ type and
-    # Python type of the property is int.
-    @pyqtProperty(int)
-    def shoeSize(self):
-        return self._shoeSize
-
-    # Define the setter of the 'shoeSize' property.
-    @shoeSize.setter
-    def shoeSize(self, shoeSize):
-        self._shoeSize = shoeSize
-
-
-# Create the application instance.
-app = QCoreApplication(sys.argv)
-
-# Register the Python type.  Its URI is 'People', it's v1.0 and the type
-# will be called 'Person' in QML.
-qmlRegisterType(Person, 'People', 1, 0, 'Person')
-
-# Create a QML engine.
-engine = QQmlEngine()
-
-# Create a component factory and load the QML script.
-component = QQmlComponent(engine)
-component.loadUrl(QUrl('example.qml'))
-
-# Create an instance of the component.
-person = component.create()
-
-if person is not None:
-    # Print the value of the properties.
-    print("The person's name is %s." % person.name)
-    print("They wear a size %d shoe." % person.shoeSize)
-else:
-    # Print all errors that occurred.
-    for error in component.errors():
-        print(error.toString())
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = Window()
+    window.show()
+    sys.exit(app.exec_())
