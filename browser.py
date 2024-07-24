@@ -4,76 +4,112 @@ from PyQt5.QtGui import *
 from PyQt5.QtWebEngineWidgets import *
 
 
+class Sidebar(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setFixedWidth(40)  # Initial width of the sidebar
+        self.setMaximumWidth(250)  # Maximum width when expanded
+
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignTop)
+        self.setLayout(self.layout)
+
+    def enterEvent(self, event):
+        self.animateSidebar(expand=True)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.animateSidebar(expand=False)
+        super().leaveEvent(event)
+
+    def animateSidebar(self, expand):
+        animation = QPropertyAnimation(self, b"geometry")
+        animation.setDuration(300)
+        if expand:
+            animation.setEndValue(QRect(0, 0, self.maximumWidth(), self.height()))
+        else:
+            animation.setEndValue(QRect(0, 0, self.minimumWidth(), self.height()))
+        animation.start()
+
+
 class MyWebBrowser(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MyWebBrowser, self).__init__(*args, **kwargs)
 
         self.browser = QWebEngineView()
-        self.browser.setUrl(QUrl("http://www.google.com"))
+        self.browser.setUrl(QUrl("https://www.google.com"))
 
         self.setWindowTitle("Web Browser")
-        self.setCentralWidget(self.browser)
         self.showMaximized()
 
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Enter URL and press Enter")
+        self.url_bar.setFixedHeight(30)  # Increase the height of the URL bar
+        self.url_bar.setMinimumWidth(
+            300
+        )  # Optional: Set a minimum width for the URL bar
         self.url_bar.returnPressed.connect(self.navigate_to_url)
 
         navbar = QToolBar()
         self.addToolBar(navbar)
 
+        home_btn = QAction("Home", self)
+        home_btn.triggered.connect(self.navigate_home)
+        navbar.addAction(home_btn)
+
+        navbar.addWidget(self.url_bar)
+
         self.go_btn = QPushButton("Go")
         self.go_btn.clicked.connect(self.navigate_to_url)
+        navbar.addWidget(self.go_btn)
 
         self.back_btn = QPushButton("<")
         self.back_btn.clicked.connect(self.browser.back)
+        navbar.addWidget(self.back_btn)
 
         self.forward_btn = QPushButton(">")
         self.forward_btn.clicked.connect(self.browser.forward)
+        navbar.addWidget(self.forward_btn)
 
         self.reload_btn = QPushButton("Reload")
         self.reload_btn.clicked.connect(self.browser.reload)
-        
-        home_btn = QAction('Home', self)
-        home_btn.triggered.connect(self.navigate_home)
-        navbar.addAction(home_btn)
-        
+        navbar.addWidget(self.reload_btn)
+
         shortcutPrevPage = QKeySequence(Qt.ALT + Qt.Key_Left)
-        self.shortcutPrevPage = QShortcut(shortcutPrevPage,self)
+        self.shortcutPrevPage = QShortcut(shortcutPrevPage, self)
         self.shortcutPrevPage.activated.connect(self.browser.back)
-        
+
         shortcutForwPage = QKeySequence(Qt.ALT + Qt.Key_Right)
-        self.shortcutForwPage = QShortcut(shortcutForwPage,self)
+        self.shortcutForwPage = QShortcut(shortcutForwPage, self)
         self.shortcutForwPage.activated.connect(self.browser.forward)
-        
-        shortcutJumpSearch = QKeySequence(Qt.ALT + Qt.Key_Slash)
-        self.shortcutJumpSearch = QShortcut(shortcutJumpSearch,self)
+
+        shortcutJumpSearch = QKeySequence(Qt.CTRL + Qt.Key_Slash)
+        self.shortcutJumpSearch = QShortcut(shortcutJumpSearch, self)
         self.shortcutJumpSearch.activated.connect(self.focus_url_bar)
 
-        self.navbar = QToolBar()
-        self.navbar.addWidget(self.url_bar)
-        self.navbar.addWidget(self.go_btn)
-        self.navbar.addWidget(self.back_btn)
-        self.navbar.addWidget(self.forward_btn)
-        self.navbar.addWidget(self.reload_btn)
+        self.sidebar = Sidebar()
 
-        self.addToolBar(self.navbar)
-        self.setCentralWidget(self.browser)
+        main_layout = QHBoxLayout()
+        main_layout.addWidget(self.sidebar)
+        main_layout.addWidget(self.browser)
+
+        container = QWidget()
+        container.setLayout(main_layout)
+        self.setCentralWidget(container)
 
     def focus_url_bar(self):
         self.url_bar.setFocus()
 
     def navigate_home(self):
-        self.browser.setUrl(QUrl('https://www.google.com'))
+        self.browser.setUrl(QUrl("https://www.google.com"))
 
     def navigate_to_url(self):
         url = self.url_bar.text()
-        if not url.startswith("http"):
-            self.url_bar.setText(url)
+        if not url.startswith("https://"):
             url = "https://" + url
         self.browser.setUrl(QUrl(url))
 
 app = QApplication([])
-window = MyWebBrowser()
-window.show()
+main_window = MyWebBrowser()
+main_window.show()
 app.exec_()
