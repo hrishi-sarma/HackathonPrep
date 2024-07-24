@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWebEngineWidgets import *
 
+
 class Sidebar(QWidget):
     def __init__(self):
         super().__init__()
@@ -12,13 +13,6 @@ class Sidebar(QWidget):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignTop)
         self.setLayout(self.layout)
-
-        self.home_btn = QPushButton("Home")
-        self.home_btn.clicked.connect(self.navigate_home)
-        self.layout.addWidget(self.home_btn)
-
-    def navigate_home(self):
-        main_window.navigate_home()
 
     def enterEvent(self, event):
         self.animateSidebar(expand=True)
@@ -37,6 +31,7 @@ class Sidebar(QWidget):
             animation.setEndValue(QRect(0, 0, self.minimumWidth(), self.height()))
         animation.start()
 
+
 class MyWebBrowser(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MyWebBrowser, self).__init__(*args, **kwargs)
@@ -50,13 +45,15 @@ class MyWebBrowser(QMainWindow):
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Enter URL and press Enter")
         self.url_bar.setFixedHeight(30)  # Increase the height of the URL bar
-        self.url_bar.setMinimumWidth(300)  # Optional: Set a minimum width for the URL bar
+        self.url_bar.setMinimumWidth(
+            300
+        )  # Optional: Set a minimum width for the URL bar
         self.url_bar.returnPressed.connect(self.navigate_to_url)
 
         navbar = QToolBar()
         self.addToolBar(navbar)
 
-        home_btn = QAction('Home', self)
+        home_btn = QAction("Home", self)
         home_btn.triggered.connect(self.navigate_home)
         navbar.addAction(home_btn)
 
@@ -104,11 +101,11 @@ class MyWebBrowser(QMainWindow):
         self.url_bar.setFocus()
 
     def navigate_home(self):
-        self.browser.setUrl(QUrl('https://www.google.com'))
+        self.browser.setUrl(QUrl("https://www.google.com"))
 
     def navigate_to_url(self):
         url = self.url_bar.text()
-        if not url.startswith("http"):
+        if not url.startswith("https://"):
             url = "https://" + url
         self.browser.setUrl(QUrl(url))
 
@@ -116,4 +113,3 @@ app = QApplication([])
 main_window = MyWebBrowser()
 main_window.show()
 app.exec_()
-
