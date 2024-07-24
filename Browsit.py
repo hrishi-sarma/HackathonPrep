@@ -1,7 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout, QTabWidget
 from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -40,37 +41,43 @@ class MainWindow(QWidget):
         input_layout = QHBoxLayout(input_container)
         input_layout.setContentsMargins(25, 12, 25, 12)  # Adjust margins
 
-        text_input = QLineEdit(input_container)
-        text_input.setStyleSheet("color: #ffffff;")
-        text_input.setFont(QFont("Courier", 15, QFont.Weight.Bold))  # Smaller font size
-        input_layout.addWidget(text_input)
+        self.text_input = QLineEdit(input_container)
+        self.text_input.setStyleSheet("color: #ffffff;")
+        self.text_input.setFont(QFont("Courier", 15, QFont.Weight.Bold))  # Smaller font size
+        input_layout.addWidget(self.text_input)
         
-
-        go_button = QPushButton("GO", input_container)
-        go_button.setFont(QFont("Courier", 7, QFont.Weight.Bold, italic=True))  # Smaller font size
-        go_button.setStyleSheet("color: #FFFFFF;")  # White text color
-        input_layout.addWidget(go_button)
+        self.go_button = QPushButton("GO", input_container)
+        self.go_button.setFont(QFont("Courier", 7, QFont.Weight.Bold, italic=True))  # Smaller font size
+        self.go_button.setStyleSheet("color: #FFFFFF;")  # White text color
+        self.go_button.clicked.connect(self.perform_search)
+        input_layout.addWidget(self.go_button)
 
         main_layout.addWidget(input_container, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        # Create the tab widget for web pages
+        self.tab_widget = QTabWidget(self)
+        main_layout.addWidget(self.tab_widget)
+
+        # Add the first empty tab with a default web view
+        self.add_new_tab()
 
         # Create the icons container
         icons_container = QWidget(self)
         icons_container.setFixedSize(500, 150)  # Smaller size
         icons_container.setStyleSheet("background-color: #000000;")
         
-
         icons_layout = QHBoxLayout(icons_container)
         icons_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         icons_layout.setContentsMargins(4, 4, 4, 4)
         icons_layout.setSpacing(35)  # Adjust spacing
 
         # Create the Chrome button
-        chrome_button = QPushButton(self)
-        chrome_button.setIcon(QIcon("images/basic_ios_14_app_icon_pack.jpeg"))
-        chrome_button.setIconSize(chrome_button.size())
-        chrome_button.setCheckable(True)
-        chrome_button.setFixedSize(142, 142)  # Smaller size
-        chrome_button.setStyleSheet("background-color: none;")
+        self.chrome_button = QPushButton(self)
+        self.chrome_button.setIcon(QIcon("images/basic_ios_14_app_icon_pack.jpeg"))
+        self.chrome_button.setIconSize(self.chrome_button.size())
+        self.chrome_button.setCheckable(True)
+        self.chrome_button.setFixedSize(142, 142)  # Smaller size
+        self.chrome_button.setStyleSheet("background-color: none;")
 
         # Create the Opera button
         opera_button = QPushButton(self)
@@ -89,7 +96,7 @@ class MainWindow(QWidget):
         brave_button.setStyleSheet("background-color: none;")
 
         # Add buttons to the icons container layout
-        icons_layout.addWidget(chrome_button)
+        icons_layout.addWidget(self.chrome_button)
         icons_layout.addWidget(opera_button)
         icons_layout.addWidget(brave_button)
 
@@ -110,10 +117,25 @@ class MainWindow(QWidget):
         round_button1.show()
         round_button2.show()
 
+    def add_new_tab(self):
+        web_view = QWebEngineView(self)
+        self.tab_widget.addTab(web_view, "New Tab")
+        web_view.setUrl(QUrl("https://www.google.com"))
+
+    def perform_search(self):
+        query = self.text_input.text()
+        if not query:
+            return
+
+        search_url = f"https://www.google.com/search?q={query}"
+        
+        # Open the search URL in a new tab within the application
+        web_view = QWebEngineView(self)
+        web_view.setUrl(QUrl(search_url))
+        self.tab_widget.addTab(web_view, f"Search Results for '{query}'")
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
     sys.exit(app.exec())
-
-    #uhdfisd
