@@ -72,7 +72,7 @@ class MyWebBrowser(QMainWindow):
             self.url_bar.setText(url)
             url = "https://" + url
         self.browser.setUrl(QUrl(url))
-        
+
 if __name__ == "__main__":
     app = QApplication([])
     window = MyWebBrowser()

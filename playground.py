@@ -55,7 +55,7 @@ class Window(QWidget):
         right_button = QPushButton("Right-Most")
         
         # Set the fixed size for square buttons
-        button_size = 150  # Size of the square buttons (you can adjust this value)
+        button_size = 380  # Size of the square buttons (you can adjust this value)
         left_button.setFixedSize(button_size, button_size)
         center_button.setFixedSize(button_size, button_size)
         right_button.setFixedSize(button_size, button_size)
@@ -66,7 +66,7 @@ class Window(QWidget):
         right_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         
         # Add widgets to the layout with stretch factors
-        layout.addWidget(left_button
+        layout.addWidget(left_button)
         layout.addWidget(center_button)
         layout.addWidget(right_button)
         
