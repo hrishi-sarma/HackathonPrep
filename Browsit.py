@@ -56,7 +56,7 @@ class MainWindow(QWidget):
                 background-position: center;
             }
         """)  # Change background to the image
-
+        self.showMaximized()
         self.initUI()
 
     def initUI(self):
