@@ -1,8 +1,30 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout, QTabWidget
 from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtCore import Qt, QEvent, QSize, QUrl
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+
+class HoverSidebar(QWidget):
+    def __init__(self, parent, width, extended_width):
+        super().__init__(parent)
+        self.normal_width = width
+        self.extended_width = extended_width
+        self.setFixedWidth(self.normal_width)
+        
+        # Set up the layout and contents of the sidebar
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(QLabel("Sidebar Content", self))
+        self.setLayout(self.layout)
+
+        # Enable hover events
+        self.setAttribute(Qt.WidgetAttribute.WA_Hover)
+
+    def event(self, event):
+        if event.type() == QEvent.Type.HoverEnter:
+            self.setFixedWidth(self.extended_width)
+        elif event.type() == QEvent.Type.HoverLeave:
+            self.setFixedWidth(self.normal_width)
+        return super().event(event)
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -116,6 +138,13 @@ class MainWindow(QWidget):
 
         round_button1.show()
         round_button2.show()
+
+        # Create and add the sidebar
+        self.sidebar = HoverSidebar(self, width=50, extended_width=200)
+        self.sidebar.setStyleSheet("background-color: #333333;")
+        self.sidebar.setFixedHeight(self.height())
+        self.sidebar.move(0, 0)
+        self.sidebar.show()
 
     def add_new_tab(self):
         web_view = QWebEngineView(self)
