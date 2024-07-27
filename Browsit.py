@@ -163,8 +163,9 @@ class MainWindow(QWidget):
         web_view.setUrl(QUrl(search_url))
         self.tab_widget.addTab(web_view, f"Search Results for '{query}'")
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec())  #yellow
