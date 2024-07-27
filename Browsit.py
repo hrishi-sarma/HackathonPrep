@@ -1,16 +1,16 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout, QTabWidget, QTextEdit
-from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import Qt, QEvent, QUrl
-from PyQt6.QtWebEngineWidgets import QWebEngineView  # Ensure this import is included
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWebEngineWidgets import *  # Ensure this import is included
 
 class HoverSidebar(QWidget):
     def __init__(self, parent, width, extended_width):
         super().__init__(parent)
         self.normal_width = width
         self.extended_width = extended_width
-        self.setFixedWidth(self.normal_width)
-        
+        self.setFixedWidth(10)  
+        self.setMaximumWidth(250) 
         
         self.layout = QVBoxLayout()
 
@@ -19,7 +19,6 @@ class HoverSidebar(QWidget):
         self.title_label.setStyleSheet("color: #FFFFFF; margin-bottom: 5px;")  # White text color and margin
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.title_label)
-        
         
         self.note_area = QTextEdit(self)
         self.note_area.setPlaceholderText("Take notes here...")
@@ -43,26 +42,59 @@ class HoverSidebar(QWidget):
         self.normal_width = width
         self.setFixedWidth(self.normal_width)
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Set up the URL bar
+        self.url_bar = QLineEdit()
+        self.url_bar.setPlaceholderText("Enter URL and press Enter")
+        self.url_bar.setFixedHeight(30)  # Increase the height of the URL bar
+        self.url_bar.setMinimumWidth(300)  # Optional: Set a minimum width for the URL bar
+
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+        
+
+        # Set up the toolbar and add the URL bar
+        navbar = QToolBar("Navigation")
+        self.addToolBar(navbar)
+        
+
+        self.go_btn = QPushButton("Go")
+        self.go_btn.clicked.connect(self.navigate_to_url)
+        navbar.addWidget(self.go_btn)
+
+        home_btn = QAction("Home", self)
+        home_btn.triggered.connect(self.navigate_home)
+        navbar.addAction(home_btn)
+
+        navbar.addWidget(self.url_bar)
+
+        # Set the main window properties
         self.setWindowTitle("Browsit")
-        self.setGeometry(100, 100, 1920, 1080) 
+        self.setGeometry(100, 100, 1920, 1080)
         self.setStyleSheet("""
-            MainWindow {
+            QMainWindow {
                 background-image: url(images/eagan-hsu-sdewdKGHl5A-unsplash.jpg);
                 background-repeat: no-repeat;
                 background-position: center;
             }
         """)  # Change background to the image
         self.showMaximized()
+
+        # Create the central widget and set layout
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
+       
         self.initUI()
+
+        # Connect returnPressed signals
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
         self.text_input.returnPressed.connect(self.perform_search)
 
     def initUI(self):
         # Create the main layout
-        main_layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout(self.central_widget)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Create the Browsit label
@@ -75,7 +107,7 @@ class MainWindow(QWidget):
 
         # Create the text input area
         input_container = QWidget(self)
-        input_container.setFixedSize(300, 50)  # Smaller size
+        input_container.setFixedSize(600, 50)  # Smaller size
         input_container.setStyleSheet("background-color: #000000; border-radius: 15px;")
 
         input_layout = QHBoxLayout(input_container)
@@ -143,22 +175,16 @@ class MainWindow(QWidget):
         # Add icons container to the main layout
         main_layout.addWidget(icons_container, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # # Create round buttons N and B
-        # round_button1 = QPushButton("N", self)
-        # round_button1.setGeometry(30, 30, 30, 30)  # Smaller size
-        # round_button1.setFont(QFont("Courier", 8, QFont.Weight.Bold, italic=True))  # Smaller font size
-        # round_button1.setStyleSheet("color: #FFFFFF;")  # White text color
-
+        # Create round button B
         round_button2 = QPushButton("B", self)
         round_button2.setGeometry(1640, 30, 30, 30)  # Place on the leftmost side, same height as round_button1
         round_button2.setFont(QFont("Courier", 8, QFont.Weight.Bold, italic=True))  # Smaller font size
         round_button2.setStyleSheet("color: #FFFFFF;")  # White text color
 
-        # round_button1.show()
         round_button2.show()
 
         # Create and add the sidebar
-        self.sidebar = HoverSidebar(self, width=50, extended_width=200)
+        self.sidebar = HoverSidebar(self, width=10, extended_width=250)
         self.sidebar.setStyleSheet("background-color: rgba(51, 51, 51, 150);")  # Translucent background
         self.sidebar.setFixedHeight(self.height())
         self.sidebar.move(0, 0)
@@ -167,26 +193,35 @@ class MainWindow(QWidget):
     def add_new_tab(self):
         web_view = QWebEngineView(self)
         self.tab_widget.addTab(web_view, "New Tab")
-        web_view.setUrl(QUrl("https://www.google.com"))
+        web_view.setUrl(QUrl(""))
 
     def perform_search(self):
-        query = self.text_input.text()
+        query = self.text_input.text() or self.url_bar.text()
         if not query:
             return
 
-        search_url = f"https://www.google.com/search?q={query}"
+        search_url = f"https://duckduckgo.com/?q={query}"
         
         # Open the search URL in a new tab within the application
         web_view = QWebEngineView(self)
         web_view.setUrl(QUrl(search_url))
         self.tab_widget.addTab(web_view, f"Search Results for '{query}'")
 
-    def change_sidebar_width(self, width):
-        self.sidebar.set_normal_width(width)
+    def navigate_home(self):
+        self.add_new_tab()  # For now, just add a new tab as the home page
+
+    def navigate_to_url(self):
+        url = self.url_bar.text()
+        if not url.startswith("https://"):
+            url = "https://" + url
+        web_view = QWebEngineView(self)
+        web_view.setUrl(QUrl(url))
+        self.tab_widget.addTab(web_view, f"Results for:{url}")
+
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
-    mainWin.change_sidebar_width(20)  
     sys.exit(app.exec())
