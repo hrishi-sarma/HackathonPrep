@@ -48,7 +48,7 @@ class MainWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("Browsit")
-        self.setGeometry(100, 100, 1920, 1080)  # Smaller window size
+        self.setGeometry(100, 100, 1920, 1080) 
         self.setStyleSheet("""
             MainWindow {
                 background-image: url(images/eagan-hsu-sdewdKGHl5A-unsplash.jpg);
@@ -58,6 +58,7 @@ class MainWindow(QWidget):
         """)  # Change background to the image
         self.showMaximized()
         self.initUI()
+        self.text_input.returnPressed.connect(self.perform_search)
 
     def initUI(self):
         # Create the main layout
@@ -112,7 +113,7 @@ class MainWindow(QWidget):
 
         # Create the Chrome button
         self.chrome_button = QPushButton(self)
-        self.chrome_button.setIcon(QIcon("images/basic_ios_14_app_icon_pack.jpeg"))
+        self.chrome_button.setStyleSheet("background-image : url(notas.jpeg);")
         self.chrome_button.setIconSize(self.chrome_button.size())
         self.chrome_button.setCheckable(True)
         self.chrome_button.setFixedSize(142, 142)  # Smaller size
