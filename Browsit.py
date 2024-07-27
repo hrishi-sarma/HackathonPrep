@@ -1,8 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout, QTabWidget
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QVBoxLayout, QHBoxLayout, QTabWidget, QTextEdit
 from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtCore import Qt, QEvent, QSize, QUrl
-from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import Qt, QEvent, QUrl
+from PyQt6.QtWebEngineWidgets import QWebEngineView  # Ensure this import is included
 
 class HoverSidebar(QWidget):
     def __init__(self, parent, width, extended_width):
@@ -11,13 +11,26 @@ class HoverSidebar(QWidget):
         self.extended_width = extended_width
         self.setFixedWidth(self.normal_width)
         
-        # Set up the layout and contents of the sidebar
+        
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel("Sidebar Content", self))
+
+        self.title_label = QLabel("Notes", self)
+        self.title_label.setFont(QFont("Courier", 16, QFont.Weight.Bold))
+        self.title_label.setStyleSheet("color: #FFFFFF; margin-bottom: 5px;")  # White text color and margin
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.title_label)
+        
+        
+        self.note_area = QTextEdit(self)
+        self.note_area.setPlaceholderText("Take notes here...")
+        self.note_area.setStyleSheet("background-color: #555555; color: #FFFFFF; border: none;")
+        self.layout.addWidget(self.note_area)
+        
         self.setLayout(self.layout)
 
         # Enable hover events
         self.setAttribute(Qt.WidgetAttribute.WA_Hover)
+        
 
     def event(self, event):
         if event.type() == QEvent.Type.HoverEnter:
@@ -25,6 +38,10 @@ class HoverSidebar(QWidget):
         elif event.type() == QEvent.Type.HoverLeave:
             self.setFixedWidth(self.normal_width)
         return super().event(event)
+
+    def set_normal_width(self, width):
+        self.normal_width = width
+        self.setFixedWidth(self.normal_width)
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -125,23 +142,23 @@ class MainWindow(QWidget):
         # Add icons container to the main layout
         main_layout.addWidget(icons_container, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # Create round buttons N and B
-        round_button1 = QPushButton("N", self)
-        round_button1.setGeometry(30, 30, 30, 30)  # Smaller size
-        round_button1.setFont(QFont("Courier", 8, QFont.Weight.Bold, italic=True))  # Smaller font size
-        round_button1.setStyleSheet("color: #FFFFFF;")  # White text color
+        # # Create round buttons N and B
+        # round_button1 = QPushButton("N", self)
+        # round_button1.setGeometry(30, 30, 30, 30)  # Smaller size
+        # round_button1.setFont(QFont("Courier", 8, QFont.Weight.Bold, italic=True))  # Smaller font size
+        # round_button1.setStyleSheet("color: #FFFFFF;")  # White text color
 
         round_button2 = QPushButton("B", self)
         round_button2.setGeometry(1640, 30, 30, 30)  # Place on the leftmost side, same height as round_button1
         round_button2.setFont(QFont("Courier", 8, QFont.Weight.Bold, italic=True))  # Smaller font size
         round_button2.setStyleSheet("color: #FFFFFF;")  # White text color
 
-        round_button1.show()
+        # round_button1.show()
         round_button2.show()
 
         # Create and add the sidebar
         self.sidebar = HoverSidebar(self, width=50, extended_width=200)
-        self.sidebar.setStyleSheet("background-color: #333333;")
+        self.sidebar.setStyleSheet("background-color: rgba(51, 51, 51, 150);")  # Translucent background
         self.sidebar.setFixedHeight(self.height())
         self.sidebar.move(0, 0)
         self.sidebar.show()
@@ -163,9 +180,12 @@ class MainWindow(QWidget):
         web_view.setUrl(QUrl(search_url))
         self.tab_widget.addTab(web_view, f"Search Results for '{query}'")
 
+    def change_sidebar_width(self, width):
+        self.sidebar.set_normal_width(width)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
-    sys.exit(app.exec())  #yellow
+    mainWin.change_sidebar_width(20)  
+    sys.exit(app.exec())
